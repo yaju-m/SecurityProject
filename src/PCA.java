@@ -1,5 +1,10 @@
+import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import org.apache.commons.math.stat.correlation.Covariance;
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by padma on 7/7/17.
@@ -49,25 +54,63 @@ public class PCA {
 
     private Matrix outputCovarianceMatrix(double[][] subtractedMeanData) {
         int origArrayLen = subtractedMeanData.length;
+        //creating empty square covariance matrix
         Matrix covarianceMatrix = new Matrix(origArrayLen, origArrayLen);
-        for ()
-
+        for (int i = 0; i < origArrayLen; i++) {
+            for (int j = 0; j < origArrayLen; j++) {
+                //i moves slower than j, so x,x then x,y then x,z
+                double currCovariance = new Covariance().covariance(subtractedMeanData[i], subtractedMeanData[j]);
+                //set into correct place; for example x,y is in 0,1 so i,j corr to 0,1
+                covarianceMatrix.set(i, j, currCovariance);
+            }
+        }
+        return covarianceMatrix;
     }
 
-    private void subtractMeanFromEachDimension(Matrix inputMatrix) {
-        int numberOfColumns = inputMatrix.getColumnDimension();
-        int maxRowIndex = inputMatrix.getRowDimension() - 1;
-        for (int i = 0; i < numberOfColumns; i++) {
-            Matrix singleColumn = inputMatrix.getMatrix(0, maxRowIndex, new int[]{i});
+    private double[] getEigenVals(Matrix covarianceMatrix) {
+        return new EigenvalueDecomposition(covarianceMatrix).getRealEigenvalues();
+    }
 
+    private Matrix getEigenVecs(Matrix covarianceMatrix) {
+        return new EigenvalueDecomposition(covarianceMatrix).getV();
+    }
 
+    private Matrix orderEigenVecMatrix (double[] eigenVals, Matrix eigenVecs) {
+        //turn array into list so that it can be sorted
+        ArrayList<Double> eigenValList = new ArrayList<Double>();
+        for (int i = 0; i < eigenVals.length; i++) {
+            eigenValList.add(eigenVals[i]);
         }
+        //sorts from small to big
+        Collections.sort(eigenValList);
+        //reverses so that we have big to small
+        Collections.reverse(eigenValList);
 
+        //new empty eignvec Matrix
+        Matrix orderedEigenVecs = new Matrix(eigenVecs.getRowDimension(), eigenVecs.getColumnDimension());
+        //we want horizonatal arrays so that the eigenvec will be in rows not col
+        double[][] orderedEigenVecsHoriz = orderedEigenVecs.transpose().getArray();
 
+        //get 2D array from original eigenvec Matrix (eigen vec in rows again not cols)
+        double [][] origEigenVecsHoriz = eigenVecs.transpose().getArray();
 
+        //go through each orig val and compare with every new val
+        for (int i = 0; i < eigenVals.length; i++) {
+            for (int j = 0; j < eigenValList.size(); j++) {
+                //look for match
+                if (eigenVals[i] == eigenValList.get(j)) {
+                    orderedEigenVecsHoriz[j] = origEigenVecsHoriz[i];
+                    //once a j index number from eigenVal list has been matched, it can't be matched again.
+                    // This is to avoid doubles. Therefore, the value is maxed out.
+                    eigenValList.add(j, Double.MAX_VALUE);
+                }
+            }
+        }
+        //turn the eigenvec matrix back to eigenvec as columns
+        orderedEigenVecs = new Matrix(orderedEigenVecsHoriz).transpose();
+        return orderedEigenVecs;
+    }
 
-
-    public Matrix compute(Matrix filledMatrix) {}
 
 
 
