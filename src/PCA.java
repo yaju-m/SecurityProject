@@ -99,7 +99,7 @@ public class PCA {
                     orderedEigenVecsHoriz[j] = origEigenVecsHoriz[i];
                     //once a j index number from eigenVal list has been matched, it can't be matched again.
                     // This is to avoid doubles. Therefore, the value is maxed out.
-                    eigenValList.add(j, Double.MAX_VALUE);
+                    eigenValList.set(j, Double.MAX_VALUE);
                 }
             }
         }
@@ -122,6 +122,18 @@ public class PCA {
                 getEigenVecs(covarianceMatrix)), origData);
         return finalData;
 
+    }
+
+    public static void main(String[] args) {
+        double[][] testData = {{2.5, 0.5, 2.2, 1.9, 3.1, 2.3, 2, 1, 1.5, 1.1},
+                {2.4, 0.7, 2.9, 2.2, 3.0, 2.7, 1.6, 1.1, 1.6, 0.9}};
+        PCA tester = new PCA(testData);
+        double[][] finalData = tester.runPCA().getArray();
+        for (int i = 0; i < finalData.length; i++) {
+            for (int j = 0; j < finalData[0].length; j++) {
+                System.out.println(finalData[i][j]);
+            }
+        }
     }
 
 }
