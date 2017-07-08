@@ -10,23 +10,20 @@ import java.util.Collections;
  * Created by padma on 7/7/17.
  */
 public class PCA {
-    public Matrix dataMatrix;
 
-    //constructor PCA should take in rawData.
+    //you need two rawData variables; one of which gets modified when the mean in subtracted, and one that is never touched
+    //origData is never touched
+    private double[][] rawData;
+    private double[][] origData;
 
-    /*private void fillDataIntoMatrix(double[][] rawData) {
-
-        //rawData is give as [[x1, x2, x3], [y1, y2, y3], [z1, z2, z3]]
-        // fills the Matrix with data with x in first row, y in second, etc.
-        Matrix filledMatrix = new Matrix(rawData);
-
-        //rows must represent observations, and columns represent variables
-        //now with transpose, the first row has x1 y1 z1 row two has x2 y2 z2 etc
-        filledMatrix.transpose();
-        dataMatrix = filledMatrix;
+    //constructor PCA should take in raw data.
+    public PCA(double[][] rawdata) {
+        rawData = rawdata;
+        origData = rawdata;
     }
-    **/
 
+
+    //for below, assume rawData is given as [[x1, x2, x3], [y1, y2, y3], [z1, z2, z3]]
     private double[] getAverages(double[][] rawData) {
         //next, get the averages of each variable and store them in an double[] array
         //remember, rawData.length will give you the number of variables
@@ -86,9 +83,9 @@ public class PCA {
         //reverses so that we have big to small
         Collections.reverse(eigenValList);
 
-        //new empty eignvec Matrix
+        //new empty eigenvec Matrix
         Matrix orderedEigenVecs = new Matrix(eigenVecs.getRowDimension(), eigenVecs.getColumnDimension());
-        //we want horizonatal arrays so that the eigenvec will be in rows not col
+        //we want horizontal arrays so that the eigenvec will be in rows not col
         double[][] orderedEigenVecsHoriz = orderedEigenVecs.transpose().getArray();
 
         //get 2D array from original eigenvec Matrix (eigen vec in rows again not cols)
@@ -112,7 +109,19 @@ public class PCA {
     }
 
 
+    private Matrix outputFinalData(Matrix orderedEigenVecs, double[][] rawData) {
+        Matrix origData = new Matrix(rawData);
+        Matrix finalData = orderedEigenVecs.transpose().times(origData);
+        return finalData;
+    }
 
+    public Matrix runPCA() {
+        double[][] subtractedData = subtractAveragesFromVariables(rawData, getAverages(rawData));
+        Matrix covarianceMatrix = outputCovarianceMatrix(subtractedData);
+        Matrix finalData = outputFinalData(orderEigenVecMatrix(getEigenVals(covarianceMatrix),
+                getEigenVecs(covarianceMatrix)), origData);
+        return finalData;
 
+    }
 
 }
