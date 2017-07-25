@@ -1,6 +1,9 @@
 #Questions: 
 #does the calling of the column using $ work?
 #does the subtraction from a column work?
+#check covariance matrix item setting 
+#is sort destructive? or do you have to set into another variable?
+
 
 #getting averages from each column 
 getAverages <- function(raw_data_table) {
@@ -26,4 +29,41 @@ subtractAveragesFromVariables <- function(raw_data_table, mean_values) {
   }
   return(raw_data_table)
 }
+
+outputCovarianceTable <- function(subtracted_mean_table) { 
+  col_names <- colnames(subtracted_mean_table)
+  covariance_matrix = matrix(0L, length(col_names), length(col_names))
+  i <- 1
+  j <- 1
+  #use col_names to make sure the iteration happens the correct number of times 
+  for (col in col_names) { 
+    for (col in col_names) { 
+      curr_cov = cov(subtracted_mean_table$col_names[[i]], subtracted_mean_table$col_names[[j]])
+      #set matrix value 
+      covariance_matrix[i, j] <- curr_cov
+      j <- j + 1
+    }
+    i <- i + 1
+  } 
+  return(covariance_matrix)
+}
+
+getEigenVals <- function(covariance_matrix) { 
+  eigen_vals_vectors <- eigen(covariance_matrix)
+  eigen_vals <- eigen_vals_vectors$values
+  return(eigen_vals)
+}
+
+getEigenVecs <- function(covariance_matrix) { 
+  eigen_vals_vectors <- eigen(covariance_matrix)
+  eigen_vectors <- eigen_vals_vectors$vectors
+  return(eigen_vectors)
+}
+
+orderEigenVecMatrix <- function(eigen_vals, eigen_vecs) { 
+  
+  
+  
+  
+  }
 
