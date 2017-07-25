@@ -3,6 +3,7 @@
 #does the subtraction from a column work?
 #check covariance matrix item setting 
 #is sort destructive? or do you have to set into another variable?
+#is it transposed to the correct matrix?
 
 
 #getting averages from each column 
@@ -48,22 +49,20 @@ outputCovarianceTable <- function(subtracted_mean_table) {
   return(covariance_matrix)
 }
 
-getEigenVals <- function(covariance_matrix) { 
-  eigen_vals_vectors <- eigen(covariance_matrix)
-  eigen_vals <- eigen_vals_vectors$values
-  return(eigen_vals)
-}
-
 getEigenVecs <- function(covariance_matrix) { 
   eigen_vals_vectors <- eigen(covariance_matrix)
   eigen_vectors <- eigen_vals_vectors$vectors
   return(eigen_vectors)
 }
 
-orderEigenVecMatrix <- function(eigen_vals, eigen_vecs) { 
-  
-  
-  
-  
-  }
+outputFinalData <- function(eigen_vecs, raw_data_table) {
+  return(t(eigen_vecs) %*% data.matrix(raw_data_table))
+}
+
+runPCA <- function(raw_data_table) { 
+  subtracted_mean_data <- subtractAveragesFromVariables(raw_data_table, getAverages(raw_data_table))
+  cov_matrix <- outputCovarianceTable(subtracted_mean_data)
+  final_data <- outputFinalData(getEigenVecs(cov_matrix), raw_data_table)
+  return(final_data)
+}
 
