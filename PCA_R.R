@@ -1,10 +1,3 @@
-#Questions: 
-#does the calling of the column using $ work? y 
-#does the subtraction from a column work? y 
-#check covariance matrix item setting 
-#is sort destructive? or do you have to set into another variable?
-#is it transposed to the correct matrix?
-
 
 #getting averages from each column 
 getAverages <- function(raw_data_table) {
